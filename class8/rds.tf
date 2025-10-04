@@ -49,6 +49,7 @@ resource "aws_security_group" "rds" {
   description = "Allow inbound PostgreSQL from ECS only"
   vpc_id      = aws_vpc.main.id
 
+  # inbound rule from ecs sg only
   ingress {
     description     = "PostgreSQL from ECS"
     from_port       = 5432
@@ -56,7 +57,8 @@ resource "aws_security_group" "rds" {
     protocol        = "tcp"
     security_groups = [aws_security_group.ecs_service_sg.id]
   }
-
+ 
+ # allow all outbound
   egress {
     from_port   = 0
     to_port     = 0
@@ -97,4 +99,4 @@ resource "aws_secretsmanager_secret_version" "db_link_version" {
     db_link = "postgresql://${aws_db_instance.postgres.username}:${random_password.dbs_random_string.result}@${aws_db_instance.postgres.address}:${aws_db_instance.postgres.port}/${aws_db_instance.postgres.db_name}"
   })
   depends_on = [aws_db_instance.postgres]
-}
+} 

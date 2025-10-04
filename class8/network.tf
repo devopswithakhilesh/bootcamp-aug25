@@ -2,7 +2,7 @@
 resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
   tags = {
-    Name = "august-bootcamp-vpc-tf"
+    Name = "august-vpc-tf"
   }
 }
 
@@ -11,7 +11,7 @@ resource "aws_vpc" "main" {
 resource "aws_subnet" "private_1" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
-
+  availability_zone = "ap-south-1a"
   tags = {
     Name = "private-subnet-1"
   }
@@ -20,6 +20,7 @@ resource "aws_subnet" "private_1" {
 resource "aws_subnet" "private_2" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.2.0/24"
+  availability_zone = "ap-south-1b"
 
   tags = {
     Name = "private-subnet-2"
@@ -87,6 +88,7 @@ resource "aws_route" "private_nat_route" {
 resource "aws_subnet" "public_1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.3.0/24"
+  availability_zone = "ap-south-1a"
   map_public_ip_on_launch = true
 
   tags = {
@@ -97,6 +99,7 @@ resource "aws_subnet" "public_1" {
 resource "aws_subnet" "public_2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.4.0/24"
+  availability_zone = "ap-south-1b"
   map_public_ip_on_launch = true
 
   tags = {
@@ -149,7 +152,7 @@ resource "aws_route_table_association" "public_2" {
 resource "aws_subnet" "rds_1" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.5.0/24"
-
+  availability_zone = "ap-south-1a"
   tags = {
     Name = "rds-subnet-1"
   }
@@ -158,7 +161,7 @@ resource "aws_subnet" "rds_1" {
 resource "aws_subnet" "rds_2" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.6.0/24"
-
+  availability_zone = "ap-south-1b"
   tags = {
     Name = "rds-subnet-2"
   }

@@ -25,3 +25,12 @@ provider "aws" {
     }
   }
 }
+
+terraform {
+  backend "s3" {
+    bucket         = "state-bucket-879381241087"
+    key            = "august-bootcamp25/terraform.tfstate"
+    region         = "ap-south-1"
+    encrypt        = true
+  }
+}
