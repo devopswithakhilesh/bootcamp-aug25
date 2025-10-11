@@ -1,7 +1,11 @@
 name: terraform dev class10
 
 on: 
-  workflow-dispatch:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
 
 env:
   terraform_version: 1.5.7 
@@ -10,38 +14,59 @@ env:
   # infra_path: class8
 
 jobs:
-  runs-on: ubuntu-latest
+
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform install
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.terraform_version }}
+
+      - name: fmt check
+        run: |
+          cd ${{ env.infra_path }}
+          terraform fmt -check
+
+
+# ctrl(cmd)+[ -> towrads left 
+# ctrl(cmd)+] -> towrads right 
+# comment - ctrl(cmd) + / -> comment and again Uncomment
   terraform-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
 
-    - name: checkout
-      uses: actions/checkout@v4
+      - name: Terraform install
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.terraform_version }}
 
-    - name: Terraform install
-    - uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ env.terraform_version }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v5
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ap-south-1
+      - name: Terraform init
+        # run: terraform init
+        run: |
+          cd ${{ env.infra_path }}
+          terraform init -backend-config=vars/dev.tfbackend
 
-    - name: Terraform init
-      # run: terraform init
-      run: |
-        cd ${{ env.infra_path }}
-        terraform init -backend-config=vars/dev.tfbackend
+      - name: Terraform plan
+        # run: terraform plan
+        run: |
+          cd ${{ env.infra_path }}
+          terraform plan -var-file=vars/dev.tfvars
 
-    - name: Terraform plan
-      # run: terraform plan
-      run: |
-        cd ${{ env.infra_path }}
-        terraform plan -var-file=vars/dev.tfvars
-
-    # download the code to runner
-    # install Terraform
-    # Terraform init
-    # terraform apply
+      # download the code to runner
+      # install Terraform
+      # Terraform init
+      # terraform apply
 
