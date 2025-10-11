@@ -36,6 +36,7 @@ jobs:
 # ctrl(cmd)+] -> towrads right 
 # comment - ctrl(cmd) + / -> comment and again Uncomment
   terraform-dev:
+    needs: [terraform-fmt]
     runs-on: ubuntu-latest
     steps:
       - name: checkout

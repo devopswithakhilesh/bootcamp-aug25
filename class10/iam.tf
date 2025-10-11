@@ -1,6 +1,6 @@
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "${var.environment}-ecs-task-execution-role"
-  assume_role_policy  = data.aws_iam_policy_document.ecs_task_execution_role.json
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_role.json
 }
 
 data "aws_iam_policy_document" "ecs_task_execution_role" {
@@ -8,7 +8,7 @@ data "aws_iam_policy_document" "ecs_task_execution_role" {
   statement {
     sid     = ""
     effect  = "Allow"
-    actions  = ["sts:AssumeRole"]
+    actions = ["sts:AssumeRole"]
 
     principals {
       type        = "Service"
