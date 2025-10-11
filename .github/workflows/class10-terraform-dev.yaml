@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Terraform install
-      - uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.terraform_version }}
 
@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Terraform install
-      - uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.terraform_version }}
 
