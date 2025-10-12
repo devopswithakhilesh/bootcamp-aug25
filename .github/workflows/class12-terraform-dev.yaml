@@ -13,7 +13,6 @@ env:
 
 jobs:
   terraform-dev:
-    needs: [terraform-fmt]
     runs-on: ubuntu-latest
     steps:
       - name: checkout
