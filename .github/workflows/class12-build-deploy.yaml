@@ -28,7 +28,7 @@ jobs:
           aws-region: ap-south-1
 
       - name: ecr login
-         run: echo login
+        run: echo login
 
       - name: docker build 
         run: echo build
@@ -51,7 +51,7 @@ jobs:
           aws-region: ap-south-1
 
       - name: update the new image in task def
-         run: echo update the new image in task def
+        run: echo update the new image in task def
 
       
 
