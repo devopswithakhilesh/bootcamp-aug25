@@ -1,3 +1,4 @@
+# https://github.com/akhileshmishrabiz/may-bootcamp/blob/main/.github/workflows/day8-deploy.yaml
 name: class12 ecs deploy
 
 on:
@@ -7,15 +8,20 @@ on:
   workflow_dispatch:
 
 env:
-  ecr_repo: ""
-  ecs_task_def: ""
-  ecs_cluster: ""
-  ecs_service: ""
+  ecr_repo: "879381241087.dkr.ecr.ap-south-1.amazonaws.com/dev-studentportal"
+  ecs_task_def: "dev-studentportal-task-def"
+  ecs_cluster: "dev-studentportal-cluster"
+  ecs_service: "dev-studentportal-service"
+  app_container: "studentportal"
+  aws_account: "879381241087"
+  aws_region: "ap-south-1"
+  image_tag: ${{ github.sha }}
+
 
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest      
 
     steps:
       - name: checkout out code
@@ -29,16 +35,17 @@ jobs:
           aws-region: ap-south-1
 
       - name: ecr login
-        run: echo login
+        run: aws ecr get-login-password --region ${{ env.aws_region }} | docker login --username AWS --password-stdin ${{ env.aws_account }}.dkr.ecr.${{ env.aws_region }}.amazonaws.com
 
       - name: docker build 
-        run: echo build
+        run: |
+          cd class6
+          docker build -t ecsapp .
+          docker tag ecsapp ${{ env.ecr_repo }}:${{ env.image_tag }}
 
       - name: docker push
-        run: echo push
+        run: docker push ${{ env.ecr_repo }}:${{ env.image_tag }}
 
-
-  
   deploy:
     needs: [build]
     runs-on: ubuntu-latest
@@ -50,10 +57,27 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-
-      - name: update the new image in task def
-        run: echo update the new image in task def
+          
+      - name: Download task definition for web
+        run: |
+          aws ecs describe-task-definition --task-definition ${{ env.ecs_task_def }} \
+          --query taskDefinition > task-definition.json
+          ls -l task-definition.json
 
       
+      - name: Fill in the new image ID for web in the ECS task def
+        id: task-def-web
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.app_container }}
+          image: ${{ env.ecr_repo }}:${{ env.image_tag }}
 
-  
+      - name: Deploy app on Amazon ECS task definition
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: ${{ steps.task-def-web.outputs.task-definition }}
+          service: ${{ env.ecs_service }}
+          cluster: ${{ env.ecs_cluster }}
+          wait-for-service-stability: true
