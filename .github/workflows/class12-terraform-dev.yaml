@@ -1,10 +1,11 @@
 name: terraform dev class12
 
 on: 
-  # push:
-  #   branches:
-  #     - main
-
+  push:
+    branches:
+      - main
+    paths:
+      - 'class10/**'
   workflow_dispatch:
 
 env:
@@ -40,4 +41,4 @@ jobs:
         # run: terraform plan
         run: |
           cd ${{ env.infra_path }}
-          terraform plan -var-file=vars/dev.tfvars
+          terraform plan -var-file=vars/dev.tfvars --auto-approve
