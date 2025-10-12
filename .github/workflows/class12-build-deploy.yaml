@@ -1,0 +1,58 @@
+name: class12 ecs deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ecr_repo: ""
+  ecs_task_def: ""
+  ecs_cluster: ""
+  ecs_service: ""
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout out code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: ecr login
+         run: echo login
+
+      - name: docker build 
+        run: echo build
+
+      - name: docker push
+        run: echo push
+
+
+  
+  deploy:
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: update the new image in task def
+         run: echo update the new image in task def
+
+      
+
+  
