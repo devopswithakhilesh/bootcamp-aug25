@@ -1,0 +1,41 @@
+name: terraform dev class10
+
+on: 
+  pull_request:
+    branches:
+        - main
+
+env:
+  terraform_version: 1.5.7 
+  infra_path: class10
+jobs:
+
+  terraform-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: Terraform install
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.terraform_version }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: fmt check
+        run: |
+          cd ${{ env.infra_path }}
+          terraform fmt -check
+
+      - name: Terraform plan
+        # run: terraform plan
+        run: |
+          cd ${{ env.infra_path }}
+          terraform plan -var-file=vars/dev.tfvars
+
