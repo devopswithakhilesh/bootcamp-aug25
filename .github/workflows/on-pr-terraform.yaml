@@ -1,4 +1,4 @@
-name: terraform dev class10
+name: on pr terraform
 
 on: 
   pull_request:
