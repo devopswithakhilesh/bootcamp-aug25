@@ -61,10 +61,6 @@ resource "aws_ecs_service" "ecs" {
   deployment_maximum_percent = 250 # 
   launch_type                = var.ecs_app_values["launch_type"]
 
-  deployment_configuration{
-    strategy = BLUE_GREEN
-  }
-
   network_configuration {
     security_groups  = [aws_security_group.ecs_service_sg.id]
     subnets          = [aws_subnet.private_1.id, aws_subnet.private_2.id]
@@ -137,9 +133,9 @@ resource "aws_appautoscaling_policy" "cpu_scaling_policy" {
     predefined_metric_specification {
       predefined_metric_type = "ECSServiceAverageCPUUtilization"
     }
-    target_value       = 60.0
-    scale_in_cooldown  = 30
-    scale_out_cooldown = 30
+    target_value       = 30.0
+    scale_in_cooldown  = 10
+    scale_out_cooldown = 10
   }
 }
 
