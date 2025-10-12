@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
         - main
+    paths:
+      - 'class10/**'
 
 env:
   terraform_version: 1.5.7 
