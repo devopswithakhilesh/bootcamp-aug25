@@ -1,9 +1,10 @@
 name: class12 ecs deploy
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
 
 env:
   ecr_repo: ""
