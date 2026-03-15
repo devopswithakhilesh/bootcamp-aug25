@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-script
+  namespace: failure-monitoring
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS health_checks (
+        id SERIAL PRIMARY KEY,
+        timestamp TIMESTAMP NOT NULL DEFAULT NOW(),
+        status VARCHAR(20) NOT NULL,
+        error_summary TEXT,
+        raw_logs TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS app_status (
+        id INTEGER PRIMARY KEY DEFAULT 1,
+        current_status VARCHAR(20) NOT NULL DEFAULT 'unknown',
+        last_check_time TIMESTAMP,
+        failure_count INTEGER DEFAULT 0,
+        CONSTRAINT single_row CHECK (id = 1)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_health_checks_timestamp ON health_checks(timestamp DESC);
+    CREATE INDEX IF NOT EXISTS idx_health_checks_status ON health_checks(status);
+
+    INSERT INTO app_status (id, current_status, last_check_time, failure_count)
+    VALUES (1, 'unknown', NULL, 0)
+    ON CONFLICT (id) DO NOTHING;
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: failure-monitoring
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: failure-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:14-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: "failuredb"
+        - name: POSTGRES_USER
+          value: "postgres"
+        - name: POSTGRES_PASSWORD
+          value: "postgres"
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        - name: init-script
+          mountPath: /docker-entrypoint-initdb.d
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      - name: init-script
+        configMap:
+          name: postgres-init-script
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  namespace: failure-monitoring
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+  type: ClusterIP

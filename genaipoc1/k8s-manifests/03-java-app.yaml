@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: failure-app
+  namespace: failure-monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: failure-app
+  template:
+    metadata:
+      labels:
+        app: failure-app
+    spec:
+      containers:
+      - name: failure-app
+        image: failure-app:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "postgres-service"
+        - name: DB_NAME
+          value: "failuredb"
+        - name: DB_USER
+          value: "postgres"
+        - name: DB_PASSWORD
+          value: "postgres"
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: failure-app-service
+  namespace: failure-monitoring
+spec:
+  selector:
+    app: failure-app
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
