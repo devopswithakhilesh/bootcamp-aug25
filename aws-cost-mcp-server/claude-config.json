@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "aws-cost-intelligence": {
+      "command": "/Users/akhilesh/Documents/client-projects/learning-stuff/mcpawspoc/aws-cost-mcp-server/venv/bin/python",
+      "args": [
+        "/Users/akhilesh/Documents/client-projects/learning-stuff/mcpawspoc/aws-cost-mcp-server/src/server.py"
+      ],
+      "env": {
+        "AWS_DEFAULT_REGION": "us-east-1"
+      }
+    }
+  }
+}
