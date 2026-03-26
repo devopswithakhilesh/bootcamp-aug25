@@ -16,7 +16,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment: production        # ← triggers the approval gate
+    environment: manual-approval      # ← triggers the approval gate
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
