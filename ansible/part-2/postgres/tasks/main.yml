@@ -1,0 +1,66 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for postgres setup
+- name: Install PostgreSQL packages
+  ansible.builtin.dnf:
+    name: "{{ postgres_packages }}"
+    state: present
+    update_cache: true
+
+- name: Check whether PostgreSQL is initialized
+  ansible.builtin.stat:
+    path: "{{ postgres_data_dir }}/PG_VERSION"
+  register: postgres_initialized
+
+- name: Initialize PostgreSQL
+  ansible.builtin.command: "{{ postgres_setup_command }}"
+  when: not postgres_initialized.stat.exists
+  changed_when: true
+
+- name: Listen for remote database connections
+  ansible.builtin.lineinfile:
+    path: "{{ postgres_data_dir }}/postgresql.conf"
+    regexp: "^#?listen_addresses\\s*="
+    line: "listen_addresses = '{{ postgres_listen_addresses }}'"
+  notify: Restart PostgreSQL
+
+- name: Configure the PostgreSQL port
+  ansible.builtin.lineinfile:
+    path: "{{ postgres_data_dir }}/postgresql.conf"
+    regexp: "^#?port\\s*="
+    line: "port = {{ postgres_port }}"
+  notify: Restart PostgreSQL
+
+- name: Allow the web application to authenticate
+  ansible.builtin.lineinfile:
+    path: "{{ postgres_data_dir }}/pg_hba.conf"
+    regexp: "^host\\s+{{ postgres_db_name }}\\s+{{ postgres_db_user }}\\s+{{ postgres_allowed_cidr | regex_escape() }}\\s+"
+    line: "host {{ postgres_db_name }} {{ postgres_db_user }} {{ postgres_allowed_cidr }} scram-sha-256"
+    insertafter: EOF
+  notify: Restart PostgreSQL
+
+- name: Apply PostgreSQL configuration changes
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure PostgreSQL is enabled and running
+  ansible.builtin.service:
+    name: "{{ postgres_service_name }}"
+    state: started
+    enabled: true
+
+- name: Create the application database user
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "{{ postgres_db_user }}"
+    password: "{{ postgres_db_password }}"
+    state: present
+  no_log: true
+
+- name: Create the application database
+  become: true
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ postgres_db_name }}"
+    owner: "{{ postgres_db_user }}"
+    state: present

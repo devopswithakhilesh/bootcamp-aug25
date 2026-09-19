@@ -1,0 +1,17 @@
+[Unit]
+Description=Flask PostgreSQL web application
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ webapp_user }}
+Group={{ webapp_group }}
+WorkingDirectory={{ webapp_dir }}/app
+EnvironmentFile={{ webapp_dir }}/app.env
+ExecStart={{ webapp_venv }}/bin/gunicorn --workers {{ webapp_workers }} --bind {{ webapp_host }}:{{ webapp_port }} app:app
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

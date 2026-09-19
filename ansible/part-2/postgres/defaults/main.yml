@@ -1,0 +1,20 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for postgres
+postgres_packages:
+  - postgresql15-server
+  - postgresql15
+  - python3-psycopg2
+
+postgres_service_name: postgresql
+postgres_data_dir: /var/lib/pgsql/data
+postgres_setup_command: postgresql-setup --initdb --unit postgresql
+postgres_port: 5432
+postgres_listen_addresses: "*"
+
+postgres_db_name: appdb
+postgres_db_user: appuser
+postgres_db_password: change-me-before-production
+
+# Restrict this in production, for example: 10.0.1.10/32
+postgres_allowed_cidr: "0.0.0.0/0"

@@ -1,0 +1,12 @@
+---
+- name: Configure the PostgreSQL database server
+  hosts: dbservers
+  become: true
+  roles:
+    - postgres
+
+- name: Configure the Flask web application server
+  hosts: webservers
+  become: true
+  roles:
+    - webapp

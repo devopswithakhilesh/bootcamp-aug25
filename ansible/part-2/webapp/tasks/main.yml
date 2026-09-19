@@ -1,0 +1,88 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for webapp
+- name: Install Python
+  ansible.builtin.dnf:
+    name:
+      - python3
+      - python3-pip
+    state: present
+    update_cache: true
+
+- name: Create the web application group
+  ansible.builtin.group:
+    name: "{{ webapp_group }}"
+    system: true
+    state: present
+
+- name: Create the web application user
+  ansible.builtin.user:
+    name: "{{ webapp_user }}"
+    group: "{{ webapp_group }}"
+    home: "{{ webapp_dir }}"
+    shell: /sbin/nologin
+    system: true
+    create_home: false
+    state: present
+
+- name: Create the application directory
+  ansible.builtin.file:
+    path: "{{ webapp_dir }}/app"
+    state: directory
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_group }}"
+    mode: "0755"
+
+- name: Copy the Flask application
+  ansible.builtin.copy:
+    src: app/
+    dest: "{{ webapp_dir }}/app/"
+    owner: "{{ webapp_user }}"
+    group: "{{ webapp_group }}"
+    mode: preserve
+  notify: Restart webapp
+
+- name: Install application dependencies in a virtual environment
+  ansible.builtin.pip:
+    requirements: "{{ webapp_dir }}/app/requirements.txt"
+    virtualenv: "{{ webapp_venv }}"
+    virtualenv_command: python3 -m venv
+  notify: Restart webapp
+
+- name: Write the application environment file
+  ansible.builtin.template:
+    src: flask-webapp.env.j2
+    dest: "{{ webapp_dir }}/app.env"
+    owner: root
+    group: "{{ webapp_group }}"
+    mode: "0640"
+  no_log: true
+  notify: Restart webapp
+
+- name: Install the systemd service
+  ansible.builtin.template:
+    src: flask-webapp.service.j2
+    dest: "/etc/systemd/system/{{ webapp_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart webapp
+
+- name: Enable and start the web application
+  ansible.builtin.systemd_service:
+    name: "{{ webapp_name }}"
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Apply pending web application changes
+  ansible.builtin.meta: flush_handlers
+
+- name: Verify the web application and database connection
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ webapp_port }}/health"
+    status_code: 200
+  register: webapp_health
+  retries: 10
+  delay: 3
+  until: webapp_health.status == 200

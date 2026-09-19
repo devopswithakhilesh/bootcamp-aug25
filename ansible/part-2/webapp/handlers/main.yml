@@ -1,0 +1,9 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for webapp
+- name: Restart webapp
+  ansible.builtin.systemd_service:
+    name: "{{ webapp_name }}"
+    state: restarted
+    enabled: true
+    daemon_reload: true

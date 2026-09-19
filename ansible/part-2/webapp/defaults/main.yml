@@ -1,0 +1,17 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for webapp
+webapp_name: flask-webapp
+webapp_user: flaskapp
+webapp_group: flaskapp
+webapp_dir: /opt/flask-webapp
+webapp_venv: "{{ webapp_dir }}/venv"
+webapp_host: 0.0.0.0
+webapp_port: 5000
+webapp_workers: 2
+
+postgres_host: "{{ hostvars[groups['dbservers'][0]].ansible_host | default(groups['dbservers'][0]) }}"
+postgres_port: 5432
+postgres_db_name: appdb
+postgres_db_user: appuser
+postgres_db_password: change-me-before-production

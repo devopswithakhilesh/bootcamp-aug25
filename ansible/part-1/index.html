@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>CloudForge — Modern Cloud Platform</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080b12;
+      --card: #101520;
+      --text: #f5f7fb;
+      --muted: #9aa4b2;
+      --primary: #7c5cff;
+      --secondary: #24d6b4;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(124,92,255,0.18), transparent 30%),
+        radial-gradient(circle at 80% 10%, rgba(36,214,180,0.12), transparent 25%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(1120px, 90%);
+      margin: auto;
+    }
+
+    /* NAVBAR */
+
+    nav {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    .nav-button {
+      background: white;
+      color: #080b12;
+      padding: 10px 18px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* HERO */
+
+    .hero {
+      text-align: center;
+      padding: 110px 0 100px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 14px;
+      border: 1px solid rgba(124,92,255,0.35);
+      background: rgba(124,92,255,0.08);
+      color: #b9aaff;
+      border-radius: 50px;
+      font-size: 13px;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-size: clamp(48px, 7vw, 82px);
+      line-height: 1.05;
+      letter-spacing: -4px;
+      max-width: 850px;
+      margin: auto;
+    }
+
+    h1 span {
+      background: linear-gradient(90deg, #9b83ff, #43e6c8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: 28px auto;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-top: 35px;
+    }
+
+    .primary {
+      background: var(--primary);
+      color: white;
+      padding: 13px 24px;
+      border-radius: 9px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .secondary {
+      border: 1px solid var(--border);
+      color: white;
+      padding: 13px 24px;
+      border-radius: 9px;
+      text-decoration: none;
+      background: rgba(255,255,255,0.03);
+    }
+
+    /* DASHBOARD */
+
+    .dashboard {
+      margin: 0 auto 110px;
+      max-width: 950px;
+      background: rgba(16,21,32,0.85);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 30px 100px rgba(0,0,0,0.4);
+    }
+
+    .window-bar {
+      display: flex;
+      gap: 7px;
+      margin-bottom: 20px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #3b4350;
+    }
+
+    .terminal {
+      background: #080b10;
+      border-radius: 12px;
+      padding: 30px;
+      font-family: monospace;
+      color: #b8c2d1;
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    .green {
+      color: #45e6bd;
+    }
+
+    .purple {
+      color: #a993ff;
+    }
+
+    .blue {
+      color: #71b7ff;
+    }
+
+    /* FEATURES */
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .section-title h2 {
+      font-size: 38px;
+      letter-spacing: -1.5px;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      padding-bottom: 100px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px;
+      transition: transform 0.25s, border 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(124,92,255,0.4);
+    }
+
+    .icon {
+      width: 45px;
+      height: 45px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      background: rgba(124,92,255,0.12);
+      margin-bottom: 20px;
+      font-size: 21px;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* CTA */
+
+    .cta {
+      text-align: center;
+      padding: 80px 20px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      margin-bottom: 80px;
+      background:
+        radial-gradient(circle at center, rgba(124,92,255,0.15), transparent 55%);
+    }
+
+    .cta h2 {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .cta p {
+      color: var(--muted);
+      margin-bottom: 30px;
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 0;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 750px) {
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 80px 0;
+      }
+
+      h1 {
+        letter-spacing: -2px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+
+      .dashboard {
+        margin-bottom: 80px;
+      }
+
+      .terminal {
+        padding: 20px;
+        font-size: 12px;
+      }
+
+      .cta h2 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- NAVIGATION -->
+
+    <nav>
+      <div class="logo">
+        Cloud<span>Forge</span>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#platform">Platform</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#docs">Docs</a></li>
+      </ul>
+
+      <a href="#" class="nav-button">Get Started</a>
+    </nav>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <div class="badge">
+        ✦ The modern cloud platform
+      </div>
+
+      <h1>
+        Build faster.<br />
+        <span>Operate smarter.</span>
+      </h1>
+
+      <p>
+        A powerful developer platform for building, deploying and
+        operating cloud-native applications at scale.
+      </p>
+
+      <div class="buttons">
+        <a href="#" class="primary">Start Building →</a>
+        <a href="#docs" class="secondary">Read Documentation</a>
+      </div>
+
+    </section>
+
+
+    <!-- TERMINAL -->
+
+    <section class="dashboard">
+
+      <div class="window-bar">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="terminal">
+
+        <div>
+          <span class="purple">$</span>
+          cloudforge deploy production
+        </div>
+
+        <br />
+
+        <div>
+          <span class="green">✓</span>
+          Building application...
+        </div>
+
+        <div>
+          <span class="green">✓</span>
+          Running security checks...
+        </div>
+
+        <div>
+          <span class="green">✓</span>
+          Provisioning infrastructure...
+        </div>
+
+        <div>
+          <span class="green">✓</span>
+          Deploying to Kubernetes...
+        </div>
+
+        <br />
+
+        <div>
+          <span class="blue">●</span>
+          Deployment successful
+        </div>
+
+        <div>
+          <span class="purple">→</span>
+          https://app.cloudforge.dev
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+
+    <section id="features">
+
+      <div class="section-title">
+        <h2>Everything you need</h2>
+        <p>Designed for modern engineering teams.</p>
+      </div>
+
+      <div class="features">
+
+        <div class="card">
+
+          <div class="icon">⚡</div>
+
+          <h3>Developer Experience</h3>
+
+          <p>
+            Give developers self-service infrastructure and
+            golden paths without the operational complexity.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="icon">☁</div>
+
+          <h3>Cloud Native</h3>
+
+          <p>
+            Deploy applications across AWS, GCP and Kubernetes
+            using consistent workflows and automation.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="icon">◈</div>
+
+          <h3>Observability</h3>
+
+          <p>
+            Understand your systems with metrics, logs and
+            traces from a single operational platform.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="icon">⌘</div>
+
+          <h3>Infrastructure as Code</h3>
+
+          <p>
+            Provision repeatable infrastructure using
+            Terraform-powered automation.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="icon">🛡</div>
+
+          <h3>Security Built In</h3>
+
+          <p>
+            Integrate security controls directly into your
+            development and deployment workflows.
+          </p>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="icon">↗</div>
+
+          <h3>Built for Scale</h3>
+
+          <p>
+            Reliable architecture and automation designed
+            for growing engineering organizations.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CTA -->
+
+    <section class="cta" id="platform">
+
+      <h2>Ready to build better?</h2>
+
+      <p>
+        Start building your next cloud-native application today.
+      </p>
+
+      <a href="#" class="primary">
+        Get Started →
+      </a>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer id="docs">
+      © 2026 CloudForge. Built for engineers.
+    </footer>
+
+  </div>
+
+</body>
+</html>

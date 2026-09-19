@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flask Contacts</title>
+    <style>
+      body {
+        background: #f4f6f8;
+        color: #1f2937;
+        font-family: Arial, sans-serif;
+        margin: 0;
+      }
+      main {
+        margin: 40px auto;
+        max-width: 900px;
+        padding: 0 20px;
+      }
+      .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+        margin-bottom: 24px;
+        padding: 24px;
+      }
+      form {
+        display: grid;
+        gap: 16px;
+      }
+      label {
+        display: grid;
+        font-weight: 600;
+        gap: 6px;
+      }
+      input {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        font: inherit;
+        padding: 10px;
+      }
+      button {
+        background: #2563eb;
+        border: 0;
+        border-radius: 4px;
+        color: white;
+        cursor: pointer;
+        font: inherit;
+        padding: 11px 18px;
+        width: fit-content;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px;
+        text-align: left;
+      }
+      .success {
+        background: #dcfce7;
+        color: #166534;
+        padding: 12px;
+      }
+      .error {
+        background: #fee2e2;
+        color: #991b1b;
+        padding: 12px;
+      }
+      .empty {
+        color: #64748b;
+      }
+      @media (max-width: 600px) {
+        .table-wrapper {
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Flask Contacts</h1>
+
+      <section class="card">
+        <h2>Create a contact</h2>
+
+        {% if created %}
+          <p class="success">Contact created successfully.</p>
+        {% endif %}
+
+        {% if error %}
+          <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="post" action="/">
+          <label>
+            Name
+            <input
+              type="text"
+              name="name"
+              maxlength="100"
+              value="{{ form.get('name', '') }}"
+              required
+            >
+          </label>
+
+          <label>
+            Email
+            <input
+              type="email"
+              name="email"
+              maxlength="255"
+              value="{{ form.get('email', '') }}"
+              required
+            >
+          </label>
+
+          <button type="submit">Save to PostgreSQL</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Saved contacts</h2>
+
+        {% if contacts %}
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for contact in contacts %}
+                  <tr>
+                    <td>{{ contact.id }}</td>
+                    <td>{{ contact.name }}</td>
+                    <td>{{ contact.email }}</td>
+                    <td>{{ contact.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <p class="empty">No contacts have been created yet.</p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
